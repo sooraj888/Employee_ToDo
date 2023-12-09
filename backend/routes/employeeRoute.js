@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 router.route("/allEmployees").get(getAllEmployee);
-router.route("/searchEmployees/:search").post(searchEmployees);
+router.route("/searchEmployees/:search").get(searchEmployees);
 router.route("/employee").post(addEmployee);
 router.route("/employee/:id").patch(updateEmployee).delete(deleteEmployee);
 

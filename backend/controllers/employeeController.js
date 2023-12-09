@@ -30,7 +30,7 @@ exports.deleteEmployee = asyncHandler(async (req, res, next) => {
   if (!deleteRow.rows[0]) {
     return res.json({
       message: `There Is No Row With ID :  ${id}`,
-      success: true,
+      success: false,
     });
   }
   res.json({ data: deleteRow.rows[0], success: true });

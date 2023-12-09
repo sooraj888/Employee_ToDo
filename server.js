@@ -1,5 +1,6 @@
 const express = require("express");
 require("dotenv").config();
+const path = require("path");
 
 const employeeRoute = require("./backend/routes/employeeRoute");
 const {
@@ -17,9 +18,10 @@ const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 
-// createEmployeeTable();
-// deleteEmployeeTable();
 app.use("/", employeeRoute);
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve("frontend", "build", "index.html"));
+});
 
 app.use(notFound);
 app.use(errorHandler);
