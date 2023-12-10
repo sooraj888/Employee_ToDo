@@ -1,8 +1,14 @@
 const path = require("path");
 const express = require("express");
 require("dotenv").config();
+const fs = require("fs");
 
 const app = express();
+
+app.set("views", path.join(__dirname, "build"));
+app.engine("html", require("ejs").renderFile);
+app.set("view engine", "html");
+app.use(express.static(path.join(__dirname, "build")));
 
 const employeeRoute = require("./backend/routes/employeeRoute");
 const {
@@ -19,8 +25,8 @@ const PORT = process.env.PORT || 8000;
 app.use(express.json());
 
 app.use("/", employeeRoute);
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve("frontend", "build", "index.html"));
+app.get("/*", function (req, res) {
+  res.render(path.join(__dirname, "build"));
 });
 
 app.use(notFound);
