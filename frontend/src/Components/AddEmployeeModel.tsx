@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import Styles from "./AddEmployeeModel.module.css";
-import useOutsideClick from "../hooks/useOutsideClick";
 import axios from "axios";
 import { SingleEmployeeType } from "../App";
 export default function AddEmployeeModel({
@@ -9,16 +8,13 @@ export default function AddEmployeeModel({
   callAddEmployeeApi,
   addSingleEmployee,
   setSingleEmployee,
-}: // callAddEmployeeApi,
-{
+}: {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   callAddEmployeeApi: () => void;
   addSingleEmployee: SingleEmployeeType;
   setSingleEmployee: React.Dispatch<React.SetStateAction<any>>;
 }) {
-  // const addEmployee = () => {};
-
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     callAddEmployeeApi();

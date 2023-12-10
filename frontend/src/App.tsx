@@ -1,3 +1,4 @@
+// This Page Contains All Api call function and Employee Table
 import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
@@ -9,7 +10,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Input } from "@mui/material";
 import AddEmployeeModel from "./Components/AddEmployeeModel";
 import DeleteICon from "./Icons/DeleteICon";
 import { DownloadXLSX } from "./Components/DownloadXLSX";
@@ -40,6 +40,8 @@ const tableColorStyle = {
   borderRight: "1px solid white",
 };
 
+const cellStyle = { borderBottomColor: "gray" };
+
 function App() {
   const [employees, setEmployees] = useState<Array<EmployeeType>>([]);
 
@@ -64,9 +66,10 @@ function App() {
 
   const customAlert = useAlert();
 
-  //Apis
+  //! Api  Functions
+
+  // To Get All Employee data
   const getAllEmployee = async () => {
-    console.log("api called");
     setIsLoading(true);
     try {
       const { data }: any = await axios.get("/allEmployees");
@@ -77,8 +80,8 @@ function App() {
     setIsLoading(false);
   };
 
+  // To Get Searched Employee data
   const getAllSearchEmployee = async () => {
-    console.log("search api called");
     source.cancel("Operation canceled by the user.");
     source = CancelToken.source();
     setIsLoading(true);
@@ -90,15 +93,13 @@ function App() {
         }
       );
       if (data) {
-        console.log("search Data", data.data);
         setEmployees([...data.data]);
       }
-    } catch (e) {
-      // console.log(e);
-    }
+    } catch (e) {}
     setIsLoading(false);
   };
 
+  // To Add New Single Employee data
   const callAddEmployeeApi = async () => {
     setIsLoading(true);
     try {
@@ -107,7 +108,6 @@ function App() {
         lastName: addSingleEmployee.last_name,
         city: addSingleEmployee.city,
       });
-      console.log(data?.data);
       if (data?.data) {
         customAlert.success(`${data?.data.name} Is Added`);
         setEmployees((prev: Array<EmployeeType>) => {
@@ -120,6 +120,7 @@ function App() {
     setIsLoading(false);
   };
 
+  // To Delete Single Employee data
   const handleOnDelete = async (id: number) => {
     setIsLoading(true);
     try {
@@ -138,6 +139,7 @@ function App() {
     setIsLoading(false);
   };
 
+  // To Edit Single Employee data
   const callEditApi = async (id: number, obj: any) => {
     setIsLoading(true);
     try {
@@ -151,6 +153,9 @@ function App() {
     setIsLoading(false);
   };
 
+  //!Api function end
+
+  // Selecting Title For Sort
   const handleOnTitleClick = (title: titleType) => {
     setSelectedSort((prev) => {
       const updatePrev = { ...prev };
@@ -164,6 +169,7 @@ function App() {
     });
   };
 
+  // Input Cell Edit Function
   const handleOnChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number
@@ -174,12 +180,12 @@ function App() {
       const index = updatedData.findIndex((item: any) => {
         return item.id === id;
       });
-      // console.log(updatedData[index], e.target.id);
       updatedData[index][e.target.id] = e.target.value;
       return updatedData;
     });
   };
 
+  // Title Click Sort Function
   useEffect(() => {
     setEmployees((prev) => {
       let sortedData = [...prev];
@@ -214,6 +220,7 @@ function App() {
     });
   }, [selectedSort]);
 
+  // Debouncing Functionality for Searching
   let debounceTimeInterval: NodeJS.Timeout = setTimeout(() => {}, 1000);
   let debounce = () => {
     getAllSearchEmployee();
@@ -248,21 +255,8 @@ function App() {
       ) : (
         <></>
       )}
-      <div
-        style={{
-          width: "90vw",
-          margin: "auto",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            marginBottom: "1vmax",
-            width: "100%",
-          }}
-        >
+      <div className="appContainer">
+        <div className="searchContainer">
           <input
             placeholder="Search"
             className="searchInp"
@@ -273,14 +267,7 @@ function App() {
             }}
           />
           <button
-            style={{
-              border: "none",
-              margin: "0px 5px",
-              backgroundColor: "transparent",
-              translate: "-40px",
-              fontWeight: "bolder",
-              fontFamily: "cursive",
-            }}
+            className="closeSearchBtn"
             onClick={() => {
               setSearchText("");
             }}
@@ -291,11 +278,6 @@ function App() {
           <div
             className="loader"
             style={{
-              flex: 1,
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              paddingRight: "1vmax",
               visibility: isLoading ? "visible" : "hidden",
             }}
           >
@@ -303,11 +285,7 @@ function App() {
           </div>
         </div>
 
-        <TableContainer
-          component={Paper}
-          className="myTable"
-          style={{ height: "60vh", zIndex: 1, border: "1px solid gray" }}
-        >
+        <TableContainer component={Paper} className="myTable">
           <Table
             stickyHeader={true}
             sx={{ minWidth: 650 }}
@@ -370,24 +348,16 @@ function App() {
                       align="center"
                       component="th"
                       scope="row"
-                      style={{ borderBottomColor: "gray" }}
+                      style={cellStyle}
                     >
                       <div style={{ minWidth: "100px" }}>{row.id}</div>
                     </TableCell>
-                    <TableCell
-                      align="left"
-                      style={{ borderBottomColor: "gray" }}
-                    >
+                    <TableCell align="left" style={cellStyle}>
                       <input
+                        className="inputCell"
                         type={"text"}
                         value={row.name}
                         id="name"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          padding: "1vmax 5px",
-                          border: "none",
-                        }}
                         onBlur={() => {
                           if (isEdited) {
                             //call edit api
@@ -400,20 +370,12 @@ function App() {
                         }}
                       ></input>
                     </TableCell>
-                    <TableCell
-                      align="left"
-                      style={{ borderBottomColor: "gray" }}
-                    >
+                    <TableCell align="left" style={cellStyle}>
                       <input
                         type={"text"}
                         value={row.last_name}
                         id="last_name"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          padding: "1vmax 5px",
-                          border: "none",
-                        }}
+                        className="inputCell"
                         onBlur={() => {
                           if (isEdited) {
                             //call edit api
@@ -426,20 +388,12 @@ function App() {
                         }}
                       ></input>
                     </TableCell>
-                    <TableCell
-                      align="left"
-                      style={{ borderBottomColor: "gray" }}
-                    >
+                    <TableCell align="left" style={cellStyle}>
                       <input
                         type={"text"}
                         value={row.city}
                         id="city"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          padding: "1vmax 5px",
-                          border: "none",
-                        }}
+                        className="inputCell"
                         onBlur={() => {
                           if (isEdited) {
                             //call edit api
@@ -452,12 +406,9 @@ function App() {
                         }}
                       ></input>
                     </TableCell>
-                    <TableCell
-                      align="left"
-                      style={{ borderBottomColor: "gray" }}
-                    >
+                    <TableCell align="left" style={cellStyle}>
                       <div
-                        style={{ cursor: "pointer" }}
+                        className="deleteCell"
                         onClick={() => {
                           if (window.confirm("Delete This Employee")) {
                             handleOnDelete(row?.id);
@@ -472,23 +423,10 @@ function App() {
             </TableBody>
           </Table>
         </TableContainer>
-        <div
-          className="tableFooter"
-          style={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "space-between",
-            padding: "1vmax",
-          }}
-        >
+        <div className="tableFooter">
           <DownloadXLSX data={employees} />
           <button
-            style={{
-              maxWidth: "200px",
-              // alignSelf: "flex-end",
-              padding: "0.5vmax 2vmax",
-              marginRight: "1vmax",
-            }}
+            className="btnAdd"
             onClick={() => {
               setSingleEmployee({ name: "", city: "", last_name: "" });
               setIsModelVisible(true);
