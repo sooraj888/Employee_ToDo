@@ -12,7 +12,7 @@ import Paper from "@mui/material/Paper";
 import { Input } from "@mui/material";
 import AddEmployeeModel from "./Components/AddEmployeeModel";
 import DeleteICon from "./Icons/DeleteICon";
-import DownloadXLSX from "./Components/DownloadXLSX";
+import { DownloadXLSX } from "./Components/DownloadXLSX";
 import { useAlert } from "react-alert";
 
 let CancelToken = axios.CancelToken;
@@ -306,7 +306,7 @@ function App() {
         <TableContainer
           component={Paper}
           className="myTable"
-          style={{ height: "60vh", zIndex: 1 }}
+          style={{ height: "60vh", zIndex: 1, border: "1px solid gray" }}
         >
           <Table
             stickyHeader={true}
@@ -366,10 +366,18 @@ function App() {
                     key={row.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell align="center" component="th" scope="row">
+                    <TableCell
+                      align="center"
+                      component="th"
+                      scope="row"
+                      style={{ borderBottomColor: "gray" }}
+                    >
                       <div style={{ minWidth: "100px" }}>{row.id}</div>
                     </TableCell>
-                    <TableCell align="left">
+                    <TableCell
+                      align="left"
+                      style={{ borderBottomColor: "gray" }}
+                    >
                       <input
                         type={"text"}
                         value={row.name}
@@ -392,7 +400,10 @@ function App() {
                         }}
                       ></input>
                     </TableCell>
-                    <TableCell align="left">
+                    <TableCell
+                      align="left"
+                      style={{ borderBottomColor: "gray" }}
+                    >
                       <input
                         type={"text"}
                         value={row.last_name}
@@ -415,7 +426,10 @@ function App() {
                         }}
                       ></input>
                     </TableCell>
-                    <TableCell align="left">
+                    <TableCell
+                      align="left"
+                      style={{ borderBottomColor: "gray" }}
+                    >
                       <input
                         type={"text"}
                         value={row.city}
@@ -438,7 +452,10 @@ function App() {
                         }}
                       ></input>
                     </TableCell>
-                    <TableCell align="left">
+                    <TableCell
+                      align="left"
+                      style={{ borderBottomColor: "gray" }}
+                    >
                       <div
                         style={{ cursor: "pointer" }}
                         onClick={() => {
@@ -464,7 +481,7 @@ function App() {
             padding: "1vmax",
           }}
         >
-          <DownloadXLSX />
+          <DownloadXLSX data={employees} />
           <button
             style={{
               maxWidth: "200px",
