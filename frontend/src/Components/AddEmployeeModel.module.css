@@ -1,5 +1,5 @@
 .container {
-  background-color: rgba(66, 66, 66, 0.753);
+  background-color: rgba(35, 34, 34, 0.753);
   position: fixed;
   width: 100vw;
   height: 100dvh;
@@ -7,6 +7,10 @@
   justify-content: center;
   align-items: center;
   z-index: 2;
+}
+h2 {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-weight: 600;
 }
 
 .container > form {
@@ -16,7 +20,7 @@
   width: 30vmax;
   min-height: 60vh;
   border-radius: 10px;
-  padding-top: 2vmax;
+  /* padding-top: 2vmax; */
 }
 
 .container > div {
@@ -29,18 +33,35 @@
 .container > form > input {
   padding: 1vmax;
   margin: 1vmax;
+  margin-top: 0.5vmax;
   border-radius: 10px;
-  font-size: 1.4vmax;
+  font-size: large;
+  /* border-color: gray; */
+  border: 1px solid gray;
 }
 
 .container > form > button {
   padding: 1vmax;
   margin: 1vmax;
   border-radius: 10px;
+  background-color: orange;
+  border: none;
+  color: white;
+  font-size: large;
+}
+.container > form > button:hover {
+  background-color: chocolate;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 800px) {
   .container > form {
     width: 80vw;
+  }
+  .container > form > input {
+    padding: 2vmax;
+    margin: 2vmax;
+  }
+  .container > form > button {
+    font-size: medium;
   }
 }

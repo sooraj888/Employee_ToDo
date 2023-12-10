@@ -40,7 +40,9 @@ export default function AddEmployeeModel({
         }}
       ></div>
       <form style={{ zIndex: 2 }} onSubmit={handleOnSubmit}>
+        <h2>Add New Employee</h2>
         <input
+          autoFocus={true}
           type="text"
           required
           placeholder="Name"

@@ -1,6 +1,8 @@
+const path = require("path");
 const express = require("express");
 require("dotenv").config();
-const path = require("path");
+
+const app = express();
 
 const employeeRoute = require("./backend/routes/employeeRoute");
 const {
@@ -11,8 +13,6 @@ const {
   createEmployeeTable,
   deleteEmployeeTable,
 } = require("./backend/utility/createTable");
-
-const app = express();
 
 const PORT = process.env.PORT || 8000;
 

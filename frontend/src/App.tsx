@@ -12,6 +12,8 @@ import Paper from "@mui/material/Paper";
 import { Input } from "@mui/material";
 import AddEmployeeModel from "./Components/AddEmployeeModel";
 import DeleteICon from "./Icons/DeleteICon";
+import DownloadXLSX from "./Components/DownloadXLSX";
+import { useAlert } from "react-alert";
 
 let CancelToken = axios.CancelToken;
 let source = CancelToken.source();
@@ -29,6 +31,13 @@ export type SingleEmployeeType = {
   name: string;
   last_name: string;
   city: string;
+};
+
+const tableColorStyle = {
+  backgroundColor: "#191970",
+  color: "white",
+  fontWeight: "bold",
+  borderRight: "1px solid white",
 };
 
 function App() {
@@ -51,20 +60,28 @@ function App() {
 
   let [isEdited, setIsEdited] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const customAlert = useAlert();
+
   //Apis
   const getAllEmployee = async () => {
     console.log("api called");
-    const { data }: any = await axios.get("/allEmployees");
-    if (data) {
-      setEmployees(data.data);
-    }
+    setIsLoading(true);
+    try {
+      const { data }: any = await axios.get("/allEmployees");
+      if (data) {
+        setEmployees(data.data);
+      }
+    } catch (e) {}
+    setIsLoading(false);
   };
 
   const getAllSearchEmployee = async () => {
     console.log("search api called");
     source.cancel("Operation canceled by the user.");
     source = CancelToken.source();
-
+    setIsLoading(true);
     try {
       const { data }: any = await axios.get(
         "/searchEmployees/" + searchText.trim(),
@@ -79,44 +96,59 @@ function App() {
     } catch (e) {
       // console.log(e);
     }
+    setIsLoading(false);
   };
 
   const callAddEmployeeApi = async () => {
-    const { data }: any = await axios.post("/employee", {
-      name: addSingleEmployee.name,
-      lastName: addSingleEmployee.last_name,
-      city: addSingleEmployee.city,
-    });
-    console.log(data?.data);
-    if (data?.data) {
-      setEmployees((prev: Array<EmployeeType>) => {
-        const updateData = [...prev];
-        updateData?.push(data?.data);
-        return updateData;
+    setIsLoading(true);
+    try {
+      const { data }: any = await axios.post("/employee", {
+        name: addSingleEmployee.name,
+        lastName: addSingleEmployee.last_name,
+        city: addSingleEmployee.city,
       });
-    }
+      console.log(data?.data);
+      if (data?.data) {
+        customAlert.success(`${data?.data.name} Is Added`);
+        setEmployees((prev: Array<EmployeeType>) => {
+          const updateData = [...prev];
+          updateData?.push(data?.data);
+          return updateData;
+        });
+      }
+    } catch (e) {}
+    setIsLoading(false);
   };
 
   const handleOnDelete = async (id: number) => {
-    const { data }: any = await axios.delete("/employee/" + id);
-    if (data?.success) {
-      setEmployees((prev: Array<EmployeeType>) => {
-        let updateData = [...prev];
-        updateData = updateData.filter((emp) => {
-          return emp.id !== id;
+    setIsLoading(true);
+    try {
+      const { data }: any = await axios.delete("/employee/" + id);
+      if (data?.success) {
+        customAlert.success(`${data?.data.name} Is Deleted`);
+        setEmployees((prev: Array<EmployeeType>) => {
+          let updateData = [...prev];
+          updateData = updateData.filter((emp) => {
+            return emp.id !== id;
+          });
+          return updateData;
         });
-        return updateData;
-      });
-    }
+      }
+    } catch (e) {}
+    setIsLoading(false);
   };
 
   const callEditApi = async (id: number, obj: any) => {
-    const { data }: any = await axios.patch("/employee/" + id, {
-      ...obj,
-    });
-    if (data?.data) {
-      alert("updated");
-    }
+    setIsLoading(true);
+    try {
+      const { data }: any = await axios.patch("/employee/" + id, {
+        ...obj,
+      });
+      if (data?.data) {
+        customAlert.success(`Updated`);
+      }
+    } catch (e) {}
+    setIsLoading(false);
   };
 
   const handleOnTitleClick = (title: titleType) => {
@@ -224,30 +256,70 @@ function App() {
           flexDirection: "column",
         }}
       >
-        <input
-          placeholder="Search"
-          type="text"
-          value={searchText}
-          onChange={(e) => {
-            setSearchText(e.target.value);
-          }}
+        <div
           style={{
-            maxWidth: "300px",
-            padding: "1vmax",
+            display: "flex",
             marginBottom: "1vmax",
-            fontSize: "1.5vmax",
-            borderRadius: "10px",
+            width: "100%",
           }}
-        />
+        >
+          <input
+            placeholder="Search"
+            className="searchInp"
+            type="text"
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+          />
+          <button
+            style={{
+              border: "none",
+              margin: "0px 5px",
+              backgroundColor: "transparent",
+              translate: "-40px",
+              fontWeight: "bolder",
+              fontFamily: "cursive",
+            }}
+            onClick={() => {
+              setSearchText("");
+            }}
+          >
+            X
+          </button>
+
+          <div
+            className="loader"
+            style={{
+              flex: 1,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              paddingRight: "1vmax",
+              visibility: isLoading ? "visible" : "hidden",
+            }}
+          >
+            <div></div>
+          </div>
+        </div>
 
         <TableContainer
           component={Paper}
-          style={{ height: "60vh", background: "whitesmoke" }}
+          className="myTable"
+          style={{ height: "60vh", zIndex: 1 }}
         >
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table
+            stickyHeader={true}
+            sx={{ minWidth: 650 }}
+            aria-label="simple table"
+          >
             <TableHead>
               <TableRow>
                 <TableCell
+                  style={{
+                    ...tableColorStyle,
+                    cursor: "pointer",
+                  }}
                   onClick={() => {
                     handleOnTitleClick("id");
                   }}
@@ -256,6 +328,7 @@ function App() {
                   ID
                 </TableCell>
                 <TableCell
+                  style={{ ...tableColorStyle, cursor: "pointer" }}
                   align="left"
                   onClick={() => {
                     handleOnTitleClick("name");
@@ -264,6 +337,7 @@ function App() {
                   Name
                 </TableCell>
                 <TableCell
+                  style={{ ...tableColorStyle, cursor: "pointer" }}
                   onClick={() => {
                     handleOnTitleClick("last_name");
                   }}
@@ -272,6 +346,7 @@ function App() {
                   Last Name
                 </TableCell>
                 <TableCell
+                  style={{ ...tableColorStyle, cursor: "pointer" }}
                   onClick={() => {
                     handleOnTitleClick("city");
                   }}
@@ -279,7 +354,9 @@ function App() {
                 >
                   City
                 </TableCell>
-                <TableCell align="left">Delete</TableCell>
+                <TableCell style={tableColorStyle} align="left">
+                  Delete
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -300,7 +377,7 @@ function App() {
                         style={{
                           width: "100%",
                           height: "100%",
-                          padding: "1vmax 1vmax",
+                          padding: "1vmax 5px",
                           border: "none",
                         }}
                         onBlur={() => {
@@ -323,7 +400,7 @@ function App() {
                         style={{
                           width: "100%",
                           height: "100%",
-                          padding: "1vmax 1vmax",
+                          padding: "1vmax 5px",
                           border: "none",
                         }}
                         onBlur={() => {
@@ -346,7 +423,7 @@ function App() {
                         style={{
                           width: "100%",
                           height: "100%",
-                          padding: "1vmax 1vmax",
+                          padding: "1vmax 5px",
                           border: "none",
                         }}
                         onBlur={() => {
@@ -363,8 +440,11 @@ function App() {
                     </TableCell>
                     <TableCell align="left">
                       <div
+                        style={{ cursor: "pointer" }}
                         onClick={() => {
-                          handleOnDelete(row?.id);
+                          if (window.confirm("Delete This Employee")) {
+                            handleOnDelete(row?.id);
+                          }
                         }}
                       >
                         <DeleteICon />
@@ -375,19 +455,31 @@ function App() {
             </TableBody>
           </Table>
         </TableContainer>
-        <button
+        <div
+          className="tableFooter"
           style={{
-            maxWidth: "200px",
-            alignSelf: "flex-end",
-            padding: "0.5vmax 2vmax",
-            margin: "1vmax",
-          }}
-          onClick={() => {
-            setIsModelVisible(true);
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-between",
+            padding: "1vmax",
           }}
         >
-          Add
-        </button>
+          <DownloadXLSX />
+          <button
+            style={{
+              maxWidth: "200px",
+              // alignSelf: "flex-end",
+              padding: "0.5vmax 2vmax",
+              marginRight: "1vmax",
+            }}
+            onClick={() => {
+              setSingleEmployee({ name: "", city: "", last_name: "" });
+              setIsModelVisible(true);
+            }}
+          >
+            Add
+          </button>
+        </div>
       </div>
     </div>
   );

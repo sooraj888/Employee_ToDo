@@ -3,3 +3,81 @@
   flex-direction: column;
   text-align: center;
 }
+h1 {
+  font-family: "Times New Roman", Times, serif;
+  padding: 0px;
+  margin: 0.5vmax;
+  margin-top: 1vmax;
+}
+.loader > div {
+  width: 2vmax;
+  height: 2vmax;
+  border: 5px solid rgb(122, 120, 120);
+  border-top-color: rgb(191, 190, 190);
+  border-radius: 100%;
+  animation-name: load;
+  animation-delay: 0ms;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  transition: all ease-in-out;
+}
+
+@keyframes load {
+  from {
+    rotate: 0deg;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
+
+.searchInp {
+  max-width: 300px;
+  padding: 1vmax;
+  flex: 12;
+  font-size: 1.5vmax;
+  border-radius: 10px;
+  padding-right: 40px;
+}
+.myTable {
+  /* font-size: 20px;
+   */
+  color: red;
+}
+
+input {
+  font-size: large;
+}
+
+.tableFooter > button {
+  background-color: rgb(35, 35, 146);
+  color: white;
+  border: none;
+  padding: 0.6vmax 1vmax;
+  font-size: large;
+  margin: 1vmax 0px;
+}
+
+@media screen and (max-width: 800px) {
+  .searchInp {
+    padding: 1.8vmax;
+    padding-right: 40px;
+    font-size: medium;
+  }
+  h1 {
+    margin: 1vmax;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .tableFooter > button {
+    padding: 1vmax 2vmax;
+  }
+}
+
+@media screen and (max-width: 300px) {
+  .searchInp {
+    max-width: 240px;
+    min-width: 120px;
+  }
+}
